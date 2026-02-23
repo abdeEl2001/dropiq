@@ -32,25 +32,17 @@ export default function SpyPage() {
     if (!query) { setErr("Enter a keyword."); return; }
     setErr(""); setLoading(true); setAiData(null);
 
-    const prompt = `Expert e-commerce ad spy for "${query}" in ${country}.
-Return ONLY minified JSON, strings max 70 chars:
-{"tiktokTrends":[{"keyword":"str","volume":"High","trend":"Rising","topAngle":"str","hooks":["str","str","str"],"bestFormat":"UGC","estimatedCPM":"$3-8","audienceAge":"25-34","viralScore":80},{"keyword":"str","volume":"Medium","trend":"Peak","topAngle":"str","hooks":["str","str","str"],"bestFormat":"Demo","estimatedCPM":"$4-10","audienceAge":"18-24","viralScore":70}],"crossPlatformInsights":{"winningAngle":"str","fbVsTiktok":"str","recommendedBudgetSplit":"55% TikTok / 45% FB","bestProduct":"str","estimatedROAS":"3-5x","urgencyScore":78,"urgencyReason":"str"},"competitorAdAnalysis":[{"pageName":"str","strategy":"str","weakness":"str","estimatedSpend":"$30-80/day"}],"topKeywordsToTarget":["kw1","kw2","kw3","kw4","kw5"]}
-JSON only.`;
-
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/api/spy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1500, messages: [{ role: "user", content: prompt }] }),
+        body: JSON.stringify({ query, country }),
       });
-      const d = await res.json();
-      const raw = d.content?.map((b: any) => b.text || "").join("") || "";
-      const parsed = safeJSON(raw);
-      if (parsed) setAiData(parsed);
-      else setErr("Could not parse response. Try again.");
+      const data = await res.json();
+      if (data.error) setErr(data.error);
+      else { setAiData(data); setTab("tiktok"); }
     } catch (e: any) { setErr(e.message); }
     setLoading(false);
-    setTab("tiktok");
   };
 
   const TABS = [

@@ -36,21 +36,15 @@ export default function CopyPage() {
   const generate = async () => {
     if (!product) { setErr("Enter a product name."); return; }
     setErr(""); setLoading(true); setResult(null);
-    const prompt = `Viral ad copywriter for dropshipping. Write for:
-Product: "${product}", Platform: ${platform}, Angle: ${angle}, Audience: ${audience||"general consumers"}
-Return ONLY minified JSON, strings max 120 chars:
-{"hook":"str","headline":"str","body":"str","cta":"str","caption":"str with emojis","hashtags":["t1","t2","t3","t4","t5"],"script":"15-sec video script","variation2":{"hook":"alt hook","body":"alt body"},"tips":"2 sentences on how to use this copy"}
-JSON only.`;
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method:"POST", headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1200, messages:[{role:"user",content:prompt}] }),
+      const res = await fetch("/api/copy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product, platform, angle, audience }),
       });
-      const d = await res.json();
-      const raw = d.content?.map((b: any)=>b.text||"").join("")||"";
-      const parsed = safeJSON(raw);
-      if (parsed) setResult(parsed);
-      else setErr("Could not parse response. Try again.");
+      const data = await res.json();
+      if (data.error) setErr(data.error);
+      else setResult(data);
     } catch(e: any){ setErr(e.message); }
     setLoading(false);
   };
