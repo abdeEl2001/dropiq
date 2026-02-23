@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardPage() {
@@ -59,3 +60,4 @@ export default async function DashboardPage() {
     </div>
   );
 }
+

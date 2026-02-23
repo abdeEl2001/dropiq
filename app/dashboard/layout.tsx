@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/ui/Sidebar";
@@ -22,3 +23,4 @@ export default async function DashboardLayout({ children }: { children: React.Re
     </div>
   );
 }
+
